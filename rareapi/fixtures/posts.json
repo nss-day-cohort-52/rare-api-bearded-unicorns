@@ -1,0 +1,16 @@
+[
+    {
+        "model": "rareapi.post",
+        "pk": 1,
+        "fields": {
+            "title": "Probably gonna get cut.",
+            "publication_date": "2022-02-14",
+            "image_url": null,
+            "content": "I missed a few kicks at practice and the owner was looking at me kinda funny.",
+            "approved": true,
+            "user": 1,
+            "category": 7,
+            "tags": [1]
+        }
+    }
+]

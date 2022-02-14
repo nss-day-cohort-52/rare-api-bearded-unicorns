@@ -1,0 +1,14 @@
+[
+    {
+        "model": "rareapi.rareuser",
+        "pk": 1,
+        "fields": 
+            {
+            "user": 1,
+            "active": true,
+            "created_on": "2022-02-14",
+            "bio": "The thiccest kicker in the league. Can make 40 yarders with ease but anything over that is a struggle.",
+            "profile_image_url": null
+            }
+    }
+]
