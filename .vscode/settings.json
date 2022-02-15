@@ -1,7 +1,7 @@
 {
     "python.linting.pylintArgs": [
         "--load-plugins=pylint_django",
-        "--django-settings-module=rare-api-bearded-unicorns.settings",
+        "--django-settings-module=rare.settings",
     ],
 
     "python.linting.pylintEnabled": true,
