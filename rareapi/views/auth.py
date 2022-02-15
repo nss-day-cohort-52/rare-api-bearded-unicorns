@@ -62,5 +62,6 @@ def register_user(request):
     token = Token.objects.create(user=rare_user.user)
 
     # Return the token to the client
-    data = { 'token': token.key, 'userId': rare_user.user.id }
+    data = { 'token': token.key, 
+            'valid': True}
     return Response(data)
