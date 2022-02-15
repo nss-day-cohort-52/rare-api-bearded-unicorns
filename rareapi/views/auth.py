@@ -6,7 +6,6 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
-from rareapi.models import RareUser
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -57,7 +56,10 @@ def register_user(request):
     # Now save the extra info in the rareapi_rare_user table
     rare_user = RareUser.objects.create(
         bio=request.data['bio'],
-        user=new_user
+        user=new_user,
+        profile_image_url=request.data['profile_image_url'],
+        created_on=request.data['created_on'],
+        active=request.data['active']
     )
 
     # Use the REST Framework's token generator on the new user account
