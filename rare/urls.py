@@ -18,13 +18,13 @@ from django.contrib import admin
 from django.conf.urls import include
 from django.urls import path
 from rest_framework import routers
-
+from rareapi.views import RareUserView
 from rareapi.views.post import PostViewSet
 from rareapi.views.auth import login_user, register_user
 
 router = routers.DefaultRouter(trailing_slash=False)
 router.register(r'posts', PostViewSet, 'post')
-
+router.register(r'rareusers', RareUserView, 'rareuser')
 
 urlpatterns = [
     path('register', register_user),
@@ -32,4 +32,5 @@ urlpatterns = [
     path('api-auth', include('rest_framework.urls', namespace='rest_framework')),
     path('admin/', admin.site.urls),
     path('', include (router.urls)),
+
 ]
