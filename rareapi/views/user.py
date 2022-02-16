@@ -30,7 +30,7 @@ class RareUserView(ViewSet):
             Response -- JSON serialized list of rare_user
         """
         rare_users = RareUser.objects.all()
-        rare_users = RareUser.objects.order_by('user__username')
+        rare_users = RareUser.objects.order_by('-user__username')
         serializer = RareUserSerializer(rare_users, many=True)
         return Response(serializer.data)
     
