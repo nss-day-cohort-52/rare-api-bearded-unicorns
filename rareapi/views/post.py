@@ -16,12 +16,12 @@ class PostViewSet(ViewSet):
 
     def list(self, request):
         posts = Post.objects.all()
-        category = Category.query_params.get('category', None)
-        tag = PostTag.query_params.get('tag', None)
-        if category is not None:
-            posts = posts.filter(category_id=category)
-        if tag is not None:
-            posts = posts.filter(tag_id=tag)
+        # category = Category.query_params.get('category', None)
+        # tag = PostTag.query_params.get('tag', None)
+        # if category is not None:
+        #     posts = posts.filter(category_id=category)
+        # if tag is not None:
+        #     posts = posts.filter(tag_id=tag)
         serializer = PostSerializer(posts, many=True)
         return Response(serializer.data)
 
