@@ -26,11 +26,11 @@ class PostViewSet(ViewSet):
         return Response(serializer.data)
 
     def create(self, request):
-        post = Post.objects.get(user=request.auth.user)
+        rare_user = RareUser.objects.get(user=request.auth.user)
         try:
             serializer = CreatePostSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
-            serializer.save(post=post)
+            serializer.save(user=rare_user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         except ValidationError as ex:
             return Response({'message': ex.args[0]}, status=status.HTTP_400_BAD_REQUEST)
@@ -40,7 +40,7 @@ class PostViewSet(ViewSet):
             post = Post.objects.get(pk=pk)
             serializer = CreatePostSerializer(post, data=request.data)
             serializer.is_valid(raise_exception=True)
-            serializer.save()
+            post = serializer.save()
             return Response(None, status=status.HTTP_204_NO_CONTENT)
         except ValidationError as ex:
             return Response({'message': ex.args[0]}, status=status.HTTP_400_BAD_REQUEST)
@@ -59,4 +59,4 @@ class PostSerializer(serializers.ModelSerializer):
 class CreatePostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
-        fields = ['__all__']
+        fields = ['title', 'publication_date', 'image_url', 'content', 'user', 'category']
