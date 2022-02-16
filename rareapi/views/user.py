@@ -44,7 +44,6 @@ class RareUserView(ViewSet):
             serializer = CreateRareUserSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             rare_user = serializer.save()
-            rare_user.category.add(request.data["category"])
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         except ValidationError as ex:
             return Response({'message': ex.args[0]}, status=status.HTTP_400_BAD_REQUEST)
