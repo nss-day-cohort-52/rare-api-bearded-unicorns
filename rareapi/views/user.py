@@ -1,6 +1,9 @@
 """View module for handling requests about game"""
+import base64
+import uuid
 from django.http import HttpResponseServerError
 from django.core.exceptions import ValidationError
+from django.core.files.base import ContentFile
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import serializers, status
@@ -30,6 +33,7 @@ class RareUserView(ViewSet):
             Response -- JSON serialized list of rare_user
         """
         rare_users = RareUser.objects.all()
+        rare_users = RareUser.objects.order_by('-user__username')
         serializer = RareUserSerializer(rare_users, many=True)
         return Response(serializer.data)
     
@@ -39,14 +43,15 @@ class RareUserView(ViewSet):
         Returns:
             Response -- JSON serialized rare_user instance
         """
+        rare_user = RareUser.objects.get(user=request.auth.user)
         try:
             serializer = CreateRareUserSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
-            rare_user = serializer.save()
+            
             return Response(rare_user.data, status=status.HTTP_201_CREATED)
         except ValidationError as ex:
             return Response({'message': ex.args[0]}, status=status.HTTP_400_BAD_REQUEST)
-
+        
     def update(self, request, pk):
         """Handle PUT requests for a rare_user
 
@@ -55,9 +60,12 @@ class RareUserView(ViewSet):
         """
         try:
             rare_user = RareUser.objects.get(pk=pk)
-            serializer = CreateRareUserSerializer(rare_user, data=request.data)
-            serializer.is_valid(raise_exception=True)
-            rare_user = serializer.save()
+            format, imgstr = request.data["profile_image_url"].split(';base64,')
+            ext = format.split('/')[-1]
+            data = ContentFile(base64.b64decode(imgstr), name=f'{pk}-{uuid.uuid4()}.{ext}')
+            rare_user.profile_image_url = data
+            rare_user.save()
+            
             return Response(None, status=status.HTTP_204_NO_CONTENT)
         except ValidationError as ex:
             return Response({'message': ex.args[0]}, status=status.HTTP_400_BAD_REQUEST)
