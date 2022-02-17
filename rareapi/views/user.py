@@ -1,6 +1,9 @@
 """View module for handling requests about game"""
+import base64
+import uuid
 from django.http import HttpResponseServerError
 from django.core.exceptions import ValidationError
+from django.core.files.base import ContentFile
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import serializers, status
@@ -40,13 +43,31 @@ class RareUserView(ViewSet):
         Returns:
             Response -- JSON serialized rare_user instance
         """
+        rare_user = RareUser.objects.get(user=request.auth.user)
         try:
             serializer = CreateRareUserSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
+            # Create a new instance of the game picture model you defined
+            # Example: game_picture = GamePicture()
+            rare_user = RareUser.objects.all()
+            format, imgstr = request.data["profile_image_url"].split(';base64,')
+            ext = format.split('/')[-1]
+            data = ContentFile(base64.b64decode(imgstr), name=f'{request.data["id"]}-{uuid.uuid4()}.{ext}')
+            rare_user.profile_image_url = data
+            # Give the image property of your game picture instance a value
+            # For example, if you named your property `action_pic`, then
+            # you would specify the following code:
+            #
+            #       game_picture.action_pic = data
+
+            # Save the data to the database with the save() method
+            
             rare_user = serializer.save()
             return Response(rare_user.data, status=status.HTTP_201_CREATED)
         except ValidationError as ex:
             return Response({'message': ex.args[0]}, status=status.HTTP_400_BAD_REQUEST)
+        
+        
 
     def update(self, request, pk):
         """Handle PUT requests for a rare_user
