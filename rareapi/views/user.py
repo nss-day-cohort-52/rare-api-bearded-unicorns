@@ -47,28 +47,11 @@ class RareUserView(ViewSet):
         try:
             serializer = CreateRareUserSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
-            # Create a new instance of the game picture model you defined
-            # Example: game_picture = GamePicture()
-            rare_user = RareUser.objects.all()
-            format, imgstr = request.data["profile_image_url"].split(';base64,')
-            ext = format.split('/')[-1]
-            data = ContentFile(base64.b64decode(imgstr), name=f'{request.data["id"]}-{uuid.uuid4()}.{ext}')
-            rare_user.profile_image_url = data
-            # Give the image property of your game picture instance a value
-            # For example, if you named your property `action_pic`, then
-            # you would specify the following code:
-            #
-            #       game_picture.action_pic = data
-
-            # Save the data to the database with the save() method
             
-            rare_user = serializer.save()
             return Response(rare_user.data, status=status.HTTP_201_CREATED)
         except ValidationError as ex:
             return Response({'message': ex.args[0]}, status=status.HTTP_400_BAD_REQUEST)
         
-        
-
     def update(self, request, pk):
         """Handle PUT requests for a rare_user
 
@@ -77,9 +60,12 @@ class RareUserView(ViewSet):
         """
         try:
             rare_user = RareUser.objects.get(pk=pk)
-            serializer = CreateRareUserSerializer(rare_user, data=request.data)
-            serializer.is_valid(raise_exception=True)
-            rare_user = serializer.save()
+            format, imgstr = request.data["profile_image_url"].split(';base64,')
+            ext = format.split('/')[-1]
+            data = ContentFile(base64.b64decode(imgstr), name=f'{pk}-{uuid.uuid4()}.{ext}')
+            rare_user.profile_image_url = data
+            rare_user.save()
+            
             return Response(None, status=status.HTTP_204_NO_CONTENT)
         except ValidationError as ex:
             return Response({'message': ex.args[0]}, status=status.HTTP_400_BAD_REQUEST)
