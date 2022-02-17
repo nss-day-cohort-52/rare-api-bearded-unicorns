@@ -7,6 +7,13 @@ from django.core.exceptions import ValidationError
 from rest_framework.decorators import action
 
 class TagView(ViewSet):
+    def retrieve(self, request, pk):
+        try:
+            tag = Tag.objects.get(pk=pk)
+            serializer = TagSerializer(tag)
+            return Response(serializer.data)
+        except Tag.DoesNotExist as ex:
+            return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
     
     def list(self, request):
         """Handle GET requests to get all game types
@@ -28,6 +35,12 @@ class TagView(ViewSet):
     def destroy(self, request, pk):
         tag = Tag.objects.get(pk=pk)
         tag.delete()
+        return Response(None, status=status.HTTP_204_NO_CONTENT)
+    
+    def update(self, request, pk):
+        tag = Tag.objects.get(pk=pk)
+        tag.label = request.data["label"]
+        tag.save()
         return Response(None, status=status.HTTP_204_NO_CONTENT)
 
 class TagSerializer(serializers.ModelSerializer):
