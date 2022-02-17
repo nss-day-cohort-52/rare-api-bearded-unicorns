@@ -5,9 +5,10 @@ from rest_framework.response import Response
 from rest_framework import serializers, status
 from rareapi.models import Category, RareUser
 
+
 class CategoryView(ViewSet):
     """RareApi categories view"""
-    
+
     def retrieve(self, request, pk):
         """Handle GET requests for single category
 
@@ -20,7 +21,7 @@ class CategoryView(ViewSet):
             return Response(serializer.data)
         except Category.DoesNotExist as ex:
             return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
-        
+
     def list(self, request):
         """Handle GET requests to get all category types
 
@@ -28,25 +29,25 @@ class CategoryView(ViewSet):
             Response -- JSON serialized list of category types
         """
         category = Category.objects.all()
+        category = Category.objects.order_by('label')
         serializer = CategorySerializer(category, many=True)
-        return Response(serializer.data) 
-    
+        return Response(serializer.data)
+
     def create(self, request):
         """Handle POST operations
 
         Returns:
             Response -- JSON serialized category instance
         """
-        rare_user = RareUser.objects.get(user=request.auth.user)
         try:
-            serializer = CreateCategorySerializer(data=request.data)
-            serializer.is_valid(raise_exception=True)
-            category = serializer.save()
-            category.category.add(request.data["category"])
+            category = Category.objects.create(
+                label=request.data['label']
+            )
+            serializer = CategorySerializer(category)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         except ValidationError as ex:
             return Response({'message': ex.args[0]}, status=status.HTTP_400_BAD_REQUEST)
-    
+
     def update(self, request, pk):
         """Handle PUT requests for a category
 
@@ -67,17 +68,16 @@ class CategoryView(ViewSet):
         category = Category.objects.get(pk=pk)
         category.delete()
         return Response(None, status=status.HTTP_204_NO_CONTENT)
-    
+
+
 class CategorySerializer(serializers.ModelSerializer):
     """JSON serializer for category types
     """
     class Meta:
         model = Category
-        fields = ('__all__')
-        depth = 1
-
+        fields = "__all__"
 
 class CreateCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ['__all__']
+        fields = ['id', 'label']
