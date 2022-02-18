@@ -16,6 +16,7 @@ class PostViewSet(ViewSet):
 
     def list(self, request):
         posts = Post.objects.all()
+        posts = Post.objects.order_by('-publication_date')
         # category = Category.query_params.get('category', None)
         # tag = PostTag.query_params.get('tag', None)
         # if category is not None:

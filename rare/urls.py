@@ -25,6 +25,7 @@ from rareapi.views import CategoryView
 from rareapi.views.post import PostViewSet
 from rareapi.views.auth import login_user, register_user
 from rareapi.views import TagView
+from rareapi.views import CommentView
 
 
 router = routers.DefaultRouter(trailing_slash=False)
@@ -32,6 +33,7 @@ router.register(r'posts', PostViewSet, 'post')
 router.register(r'rareusers', RareUserView, 'rareuser')
 router.register(r'categories', CategoryView, 'category')
 router.register(r'tags', TagView, 'tag')
+router.register(r'comments', CommentView, 'comment')
 
 urlpatterns = [
     path('register', register_user),
